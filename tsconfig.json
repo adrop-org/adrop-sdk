@@ -1,0 +1,4 @@
+{
+  "compilerOptions": { "target": "es2020", "module": "esnext", "moduleResolution": "bundler", "strict": true, "lib": ["es2020", "dom"], "declaration": true, "skipLibCheck": true },
+  "include": ["src"]
+}

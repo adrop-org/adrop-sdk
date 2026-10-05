@@ -1,0 +1,23 @@
+{
+  "name": "adrop-sdk",
+  "version": "0.1.0",
+  "description": "Adrop rewarded-ads SDK for the web: opt in with a wallet, show an ad, claim USDC.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "default": "./dist/index.js" } },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run"
+  },
+  "peerDependencies": { "@solana/web3.js": "^1.95.0" },
+  "devDependencies": {
+    "@solana/web3.js": "^1.99.0",
+    "jsdom": "^25.0.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.0"
+  }
+}
