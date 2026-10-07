@@ -1,13 +1,15 @@
-import { Transaction, type PublicKey } from "@solana/web3.js";
+import { Transaction, VersionedTransaction, type PublicKey } from "@solana/web3.js";
 import { AttentionTracker, type Attention } from "./attention.js";
+import { paidFetch, type CampaignCreated, type CampaignFunded, type CampaignInput, type CampaignStatus } from "./campaigns.js";
 export { AttentionTracker, type Attention };
+export { kitSignerFromWallet, paidFetch, type CampaignCreated, type CampaignFunded, type CampaignInput, type CampaignStatus } from "./campaigns.js";
 
 export type AdropWallet = {
   publicKey: PublicKey;
   signMessage(message: Uint8Array): Promise<Uint8Array>;
-  signTransaction(tx: Transaction): Promise<Transaction>;
+  signTransaction<T extends Transaction | VersionedTransaction>(tx: T): Promise<T>;
 };
-export type AdropConfig = { apiBase: string; hostAta: string; wallet: AdropWallet; fetch?: typeof fetch };
+export type AdropConfig = { apiBase: string; hostAta: string; wallet: AdropWallet; fetch?: typeof fetch; network?: string; rpcUrl?: string };
 export type Ad = { impression_id: string; nonce: string; campaign: { id: number; creative: { image_url: string; title: string; cta_url: string }; min_dwell_ms: number; price_per_view: number }; expires_at: number };
 export type Reward = { amount: number; tx: string; campaign_id: number };
 export type IdentityStatus = { registered: boolean; has_sgt: boolean; sgt_mint?: string; views_today?: number };
@@ -121,6 +123,20 @@ export class Adrop {
       });
     });
   }
+
+  /** Advertiser: POST /campaigns. The connected wallet is the advertiser unless given. Campaign is Draft until funded. */
+  async createCampaign(input: CampaignInput): Promise<CampaignCreated> {
+    return this.api<CampaignCreated>("/campaigns", { advertiser: this.cfg.wallet.publicKey.toBase58(), ...input });
+  }
+  /** Advertiser: pay the 402 on /campaigns/:id/fund with the connected wallet (x402 exact, USDC = budget); server escrows and activates. */
+  async fundCampaign(campaignId: number): Promise<CampaignFunded> {
+    const pay = paidFetch(this.cfg.wallet, this.fetchFn, { network: this.cfg.network, rpcUrl: this.cfg.rpcUrl });
+    const res = await pay(`${this.cfg.apiBase}/campaigns/${campaignId}/fund`, { method: "POST" });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new AdropError(body.error ?? "fund_failed", body.message ?? `fund failed (${res.status})`, res.status);
+    return body as CampaignFunded;
+  }
+  async getCampaign(campaignId: number): Promise<CampaignStatus> { return this.api<CampaignStatus>(`/campaigns/${campaignId}`); }
 
   /** POST /claims → wallet signs the pay_view tx → POST /claims/:id/submit. */
   async claim(ad: Ad, attention: Attention): Promise<Reward> {

@@ -111,6 +111,7 @@ devnet USDC account) or nobody in particular; `loadAd()` returns `null` when no 
 | `show(container)` | renders the creative, tracks attention, enables Claim, runs the claim and returns the `Reward` |
 | `claim(ad, attention)` | the claim step on its own, for custom UIs |
 | `onReward(handler)`, `onError(handler)` | chainable listeners |
+| `createCampaign(input)`, `fundCampaign(id)`, `getCampaign(id)` | advertiser side: create a Draft campaign (the wallet is the advertiser), pay its `402` over x402 with the same wallet, read status. See https://docs.adrop.sh/advertise/ |
 
 Errors arrive as `AdropError { code, message, status }`. Codes you will handle: `no_sgt` (the wallet holds
 no proof of personhood), `no_campaign` (nothing to show now), `no_ad` (`show()` before `loadAd()`),
