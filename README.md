@@ -35,6 +35,8 @@ then use `dist/index.js` or the IIFE bundle `dist/adrop.iife.global.js`.)
 
 - A **host USDC account** (`hostAta`): the associated token account of your app's wallet for the USDC mint.
   20% of every view lands there. Devnet USDC mint: `4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`.
+  The server pays only host accounts it knows (`400 unknown_host` otherwise); during the hackathon, ask us to
+  add yours, or use the demo host's `GYs2Ucn7MDE27VBiN4PU2MHZfVmM24ivD2FaJVX7RoyE` to try the flow.
 - A **wallet** that can `signMessage` and `signTransaction`. Any Solana wallet adapter works.
 - The Adrop server base URL (`apiBase`). Devnet: `https://api.adrop.sh`.
 
