@@ -40,5 +40,7 @@ export function kitSignerFromWallet(wallet: CampaignWallet): TransactionPartialS
 /** fetch that pays a 402 with the wallet (x402 exact, SVM). */
 export function paidFetch(wallet: CampaignWallet, fetchFn: typeof fetch, opts: { network?: string; rpcUrl?: string } = {}) {
   const client = new ExactSvmScheme(kitSignerFromWallet(wallet), opts.rpcUrl ? { rpcUrl: opts.rpcUrl } : undefined);
-  return wrapFetchWithPaymentFromConfig(fetchFn, { schemes: [{ network: (opts.network ?? X402_NETWORK_DEVNET) as `${string}:${string}`, client }] });
+  // The wallet prompt is the spend control: the budget is what the advertiser typed. Without this the client
+  // refuses anything above $1 ("rejected by spendControls.maxAmountPerPayment").
+  return wrapFetchWithPaymentFromConfig(fetchFn, { schemes: [{ network: (opts.network ?? X402_NETWORK_DEVNET) as `${string}:${string}`, client }], spendControls: false });
 }
