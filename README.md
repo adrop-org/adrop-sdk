@@ -64,6 +64,43 @@ Script tag instead of a bundler:
 A complete host page with a wallet adapter lives in the demo app
 (`apps/demo-web` in the main repository); `e2e/index.html` here is a bare-bones example.
 
+## Quickstart from zero
+
+Tested 2026-10-07 from a fresh clone, no monorepo:
+
+```sh
+git clone https://github.com/adrop-org/adrop-sdk && cd adrop-sdk
+pnpm install && pnpm build          # dist/adrop.iife.global.js (web3.js bundled) and dist/index.js (ESM)
+```
+
+Copy `dist/adrop.iife.global.js` next to an `index.html` and wire the three buttons: connect, opt in, load ad.
+
+```html
+<script src="adrop.iife.global.js"></script>
+<script>
+  const phantom = window.solana;                       // or any wallet adapter
+  const { publicKey } = await phantom.connect();
+  const wallet = {
+    publicKey,
+    signMessage: async (m) => (await phantom.signMessage(m, "utf8")).signature,   // Phantom's provider returns { signature }
+    signTransaction: (tx) => phantom.signTransaction(tx),
+  };
+  const adrop = Adrop.Adrop.init({ apiBase: "https://api.adrop.sh", hostAta: "GYs2Ucn7MDE27VBiN4PU2MHZfVmM24ivD2FaJVX7RoyE", wallet })
+    .onReward((r) => console.log("paid", r.amount / 1e6, "USDC", r.tx));
+  await adrop.optIn();
+  if (await adrop.loadAd()) adrop.show(document.getElementById("slot"));
+</script>
+```
+
+Wallet shapes: a `@solana/wallet-adapter-*` adapter already has `publicKey`, `signMessage(Uint8Array) → Uint8Array`
+and `signTransaction`, so pass it as is. A raw browser provider (Phantom's `window.solana`) returns
+`{ signature }` from `signMessage`; unwrap it as above.
+
+Devnet identity: `optIn()` needs a Genesis Token in the wallet. On devnet, mint the mock one with the
+"Mint a devnet Genesis Token" button on https://demo.adrop.sh, then come back; the identity is bound to the token,
+not to the page that minted it. Get an ad: the demo campaigns target the `dex_swap_30d` audience (wallets that hold a
+devnet USDC account) or nobody in particular; `loadAd()` returns `null` when no campaign includes your identity.
+
 ## API
 
 | Call | Does |
