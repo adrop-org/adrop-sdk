@@ -1,9 +1,10 @@
 # adrop-sdk
 
-Rewarded ads for web apps, paid in USDC on Solana. Drop the SDK into your app; your users opt in with a
-wallet and a proof of personhood, watch an ad, and get paid for every qualified view. You, the host app,
-earn 20% of every view served in your app. Advertisers fund campaigns over x402, so an AI agent can buy
-reach without a sales call.
+The plug-in ad network for Web3 apps, paid in USDC on Solana. Drop the SDK into your app and it becomes a
+host on the network: your users opt in with a wallet and a proof of personhood, watch an ad, and get paid
+for every qualified view. You, the host app, earn 20% of every view served in your app, and can run your
+own campaigns across every other host. Agencies fund campaigns over x402, so an AI agent can buy reach
+without a sales call.
 
 - Devnet demo: https://demo.adrop.sh (viewer) and https://demo.adrop.sh/advertiser
 - API: https://api.adrop.sh (`GET /health`)
